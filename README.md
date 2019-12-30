@@ -14,6 +14,6 @@ To get started we'll want to run the [2048](https://github.com/gabrielecirulli/2
 
 > $ git clone https://github.com/gabrielecirulli/2048  
 > $ cd 2048  
-> $ python -m httpserver
+> $ python -m http.server
 
 We should now have what we need to start interacting with the game using python's [Selenium](https://selenium-python.readthedocs.io) library.
