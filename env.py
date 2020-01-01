@@ -21,7 +21,31 @@ class GameEnv():
     
     port:   positive integer
             Port to serve through.
+
+    Attributes
+    ----------
+    game_on:    integer, 0
+                Indicates the game condition is game in play.
+
+    game_won:   integer, 1
+                Indicates the game condition is game won.
+
+    game_over:  integer, 2
+                Indicates the game condition is game over.
+
+    game_error: integer, 3
+                Indicates an error associated with the game condition.
+
+    max_iter:   integer, 10000
+                Maximum number of game moves before timeout.
     """
+
+    game_on = 0
+    game_won = 1
+    game_over = 2
+    game_error = 3
+    max_iter = 10000
+
     def __init__(self, path, host='0.0.0.0', port=8000):
         self.path = path 
         self.host = host 
@@ -33,13 +57,11 @@ class GameEnv():
 
         Parameters
         ----------
-        host:   string of four positive integers separated by periods.
+        host:   string, default: 0.0.0.0
                 IP address of host. 
-                Default: 0.0.0.0
 
-        port:   positive integer
+        port:   integer, default: 8000
                 Port to serve through. 
-                Default: 8000
 
         Returns
         -------
@@ -61,15 +83,15 @@ class GameEnv():
 
         Parameters
         ----------
-        driver:     webdriver object, connected to the game
+        driver:     webdriver object
                     Selenium Driver object for interfacing with the game.
 
         Returns
         -------
-        score:      positive integer
+        score:      integer
                     Current score of this game. 
 
-        score_add:  positive integer
+        score_add:  integer
                     Score added with last maneuver.
         """
         # retrieve the scores div element from the html
@@ -93,12 +115,12 @@ class GameEnv():
 
         Parameters
         ----------
-        driver:     webdriver object, connected to the game
+        driver:     webdriver object
                     Selenium Driver object for interfacing with the game.
 
         Returns
         -------
-        tiles:      list of four lists, each four elements long
+        tiles:      list
                     Each sublist represents a row starting from top to bottom.
                     Each element represents a tile, starting from left to right.
         """
@@ -125,6 +147,53 @@ class GameEnv():
                 tiles[row][col] = val 
 
         return tiles
+
+    def get_condition(self, driver):
+        """
+        Retrieve the current game condition.
+
+        Parameters
+        ----------
+        driver:     webdriver object
+                    Selenium Driver object for interfacing with the game.
+
+        Returns
+        -------
+        condition:  integer
+                    Current condition of the game using the class attributes:
+                        0: game in play
+                        1: game won
+                        2: game over 
+                        3: game error
+        """
+        # try to retrieve game condition elements
+        try:
+            elem_over = driver.find_element_by_css_selector('div.game-over')
+        except:
+            elem_over = None 
+
+        try:
+            elem_won = driver.find_element_by_css_selector('div.game-won')
+        except:
+            elem_won = None 
+
+        try:
+            elem_on = driver.find_element_by_css_selector('div.game-container')
+        except:
+            elem_on = None 
+
+        # set the game condition based on which elements were found
+        if elem_over is not None:
+            condition = self.game_over
+        elif elem_won is not None:
+            condition = self.game_won 
+        elif elem_on is not None:
+            condition = self.game_on 
+        else:
+            condition = self.game_error 
+
+        return condition 
+
             
 
 def main():
@@ -157,16 +226,33 @@ def main():
     # retrieve the game element 
     elem = driver.find_element_by_class_name("game-container")
 
-    # send a few game moves
-    elem.send_keys(Keys.ARROW_DOWN)
-    elem.send_keys(Keys.ARROW_DOWN)
-    elem.send_keys(Keys.ARROW_RIGHT)
-    elem.send_keys(Keys.ARROW_DOWN)
-    elem.send_keys(Keys.ARROW_RIGHT)
+    # loop through a full game
+    i = 0
+    while game.get_condition(driver) != game.game_over and i < game.max_iter:
+        if i == 0 or last_move == 'down':
+            elem.send_keys(Keys.ARROW_RIGHT)
+            last_move = 'right' 
+        elif last_move == 'right':
+            elem.send_keys(Keys.ARROW_UP)
+            last_move = 'up'
+        elif last_move == 'up':
+            elem.send_keys(Keys.ARROW_LEFT)
+            last_move = 'left'
+        else:
+            elem.send_keys(Keys.ARROW_DOWN)
+            last_move = 'down'
 
-    # get and print the current score 
-    score, _ = game.get_score(driver)
-    print(score)
+        score, _ = game.get_score(driver)
+        condition = game.get_condition(driver)
+
+        print('Iter: {iter}, Move: {m}, New score: {s}, Condition: {c}'.format(
+            iter=i,
+            m=last_move,
+            s=score,
+            c=condition
+        ))
+
+        i += 1
 
     # get and print the current tiles
     tiles = game.get_tiles(driver)
