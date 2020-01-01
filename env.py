@@ -62,7 +62,7 @@ class GameEnv():
         Parameters
         ----------
         driver:     webdriver object, connected to the game
-                    Driver object for interfacing with the game.
+                    Selenium Driver object for interfacing with the game.
 
         Returns
         -------
@@ -80,10 +80,52 @@ class GameEnv():
 
         # cast the scores to integers
         score = int(scores[0])
-        score_add = int(scores[1])
+        if len(scores) == 2:
+            score_add = int(scores[1])
+        else:
+            score_add = 0
 
         return score, score_add
 
+    def get_tiles(self, driver):
+        """
+        Retrieve the current tiles and their locations.
+
+        Parameters
+        ----------
+        driver:     webdriver object, connected to the game
+                    Selenium Driver object for interfacing with the game.
+
+        Returns
+        -------
+        tiles:      list of four lists, each four elements long
+                    Each sublist represents a row starting from top to bottom.
+                    Each element represents a tile, starting from left to right.
+        """
+        # initialize the tiles list
+        tiles = [
+            [None, None, None, None],   # top row
+            [None, None, None, None],   # second row
+            [None, None, None, None],   # third row
+            [None, None, None, None]    # bottom row
+        ]
+
+        # loop through the tile html elements
+        for elem in driver.find_elements_by_class_name('tile'):
+            # retrieve the css classes assigned to the tile
+            attr = elem.get_attribute('class')
+
+            # parse row, column, value from css classes
+            row = int(attr.split()[2].split('-')[3]) - 1
+            col = int(attr.split()[2].split('-')[2]) - 1
+            val = int(attr.split()[1].split('-')[1])
+
+            # update the tiles list element; duplicates exist, be wary!
+            if tiles[row][col] is None or val > tiles[row][col]:
+                tiles[row][col] = val 
+
+        return tiles
+            
 
 def main():
     """
@@ -125,6 +167,10 @@ def main():
     # get and print the current score 
     score, _ = game.get_score(driver)
     print(score)
+
+    # get and print the current tiles
+    tiles = game.get_tiles(driver)
+    print(tiles)
 
     return 0
 
