@@ -55,6 +55,35 @@ class GameEnv():
         # start the server 
         httpd.serve_forever()
 
+    def get_score(self, driver):
+        """
+        Retrieve the current score for this game.
+
+        Parameters
+        ----------
+        driver:     webdriver object, connected to the game
+                    Driver object for interfacing with the game.
+
+        Returns
+        -------
+        score:      positive integer
+                    Current score of this game. 
+
+        score_add:  positive integer
+                    Score added with last maneuver.
+        """
+        # retrieve the scores div element from the html
+        elem = driver.find_element_by_css_selector('div.score-container')
+
+        # parse scores out of the element
+        scores = elem.text.split('+')
+
+        # cast the scores to integers
+        score = int(scores[0])
+        score_add = int(scores[1])
+
+        return score, score_add
+
 
 def main():
     """
@@ -94,8 +123,8 @@ def main():
     elem.send_keys(Keys.ARROW_RIGHT)
 
     # get and print the current score 
-    content = driver.find_element_by_css_selector('div.score-container')
-    print(content.text)
+    score, _ = game.get_score(driver)
+    print(score)
 
     return 0
 
