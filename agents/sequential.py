@@ -12,7 +12,7 @@ class SequentialAgent(BaseAgent):
 
     Parameters
     ----------
-    initial_move:   unicode literal, default 0 (move_up)
+    initial_move:   unicode literal, default Keys.ARROW_UP
                     First move to be made by the agent in the game.
 
     clockwise:      bool, default True

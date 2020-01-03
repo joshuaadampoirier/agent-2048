@@ -87,9 +87,9 @@ class BaseAgent:
 
         Returns
         -------
-        next_move:  integer
+        next_move:  unicode literal
                     Next maneuver to be played by the agent encoded as one of 
-                    the BaseAgent attributes: move_up, move_left, etc.
+                    the Selenium webdriver common keys 
 
         Notes
         -----
