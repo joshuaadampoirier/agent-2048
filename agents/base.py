@@ -9,6 +9,7 @@ class BaseAgent:
     **kwargs).
     """
 
+
     @classmethod
     def _get_param_names(cls):
         """
@@ -75,3 +76,23 @@ class BaseAgent:
             params[key] = getattr(self, key)
 
         return params
+
+    def next_move(self):
+        """
+        Get the next move to be made by the agent.
+
+        Parameters
+        ----------
+        None 
+
+        Returns
+        -------
+        next_move:  integer
+                    Next maneuver to be played by the agent encoded as one of 
+                    the BaseAgent attributes: move_up, move_left, etc.
+
+        Notes
+        -----
+        All agents should overload this function with their own instance.
+        """
+        pass
