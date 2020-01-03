@@ -6,7 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys 
 
 
-class GameEnv():
+class GameEnv:
     """
     An object for the 2048 game environment. It can run the game on a server, 
     keep track of the game state, and interacts with the game.
