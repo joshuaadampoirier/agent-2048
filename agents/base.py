@@ -1,3 +1,7 @@
+import pickle 
+import datetime 
+
+
 class BaseAgent:
     """
     Base class for all agents in Agent-2048.
@@ -96,3 +100,54 @@ class BaseAgent:
         All agents should overload this function with their own instance.
         """
         pass
+
+    def _get_filename(self):
+        """
+        Proposes a filename. 
+
+        Parameters
+        ----------
+        None 
+
+        Returns
+        -------
+        filename    string
+                    Proposed filename.
+
+        Notes
+        -----
+        This method is intended to work in conjunction with the save() method.
+        If no filename is given to that method, it reaches out to this method
+        to propose an available filename.
+        """
+        # retrieve the class name (lowest subclass)
+        class_name = self.__class__.__name__ 
+
+        # determine the timestamp
+        dt = datetime.datetime.utcnow().strftime('%Y-%m-%d_%H-%M-%S')
+
+        # build the proposed filename
+        filename = "{cls_}_{ts}.pkl".format(
+            cls_=class_name, 
+            ts=dt
+        )
+
+        return filename 
+
+    def save(self, filename=None):
+        """
+        Save the agent.
+
+        Parameters
+        ----------
+        filename    string
+                    File name for the saved object.
+
+        Returns
+        -------
+        None
+        """
+        if filename is None:
+            filename = self._get_filename()
+
+        pickle.dump(self, open(filename, 'wb'))
