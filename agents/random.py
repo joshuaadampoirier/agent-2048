@@ -1,4 +1,4 @@
-from random import randint
+import random 
 
 from agents.base import BaseAgent
 from selenium.webdriver.common.keys import Keys 
@@ -17,7 +17,7 @@ class RandomAgent(BaseAgent):
             Seed for the random number generator.
     """
     def __init__(self, seed=1234):
-        self.seed = seed
+        random.seed(seed)
 
     def next_move(self):
         """
@@ -42,6 +42,6 @@ class RandomAgent(BaseAgent):
         ]
         
         # randomly pick the next move
-        next_move = moves[randint(0, 3)]
+        next_move = moves[random.randint(0, 3)]
 
         return next_move 
