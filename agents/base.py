@@ -17,7 +17,7 @@ class BaseAgent:
     @classmethod
     def _get_param_names(cls):
         """
-        Get parameter names for the estimator
+        Get parameter names for the agent
         
         Parameters
         ----------
@@ -128,7 +128,7 @@ class BaseAgent:
 
         # build the proposed filename
         filename = "{cls_}_{ts}.pkl".format(
-            cls_=class_name, 
+            cls_=class_name,         
             ts=dt
         )
 
